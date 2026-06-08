@@ -1,10 +1,10 @@
 package com.dangosil.cashflow.cashentry.repository;
 
 import com.dangosil.cashflow.cashentry.entity.CashEntry;
-import com.dangosil.cashflow.cashentry.enums.PaymentMethod;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import com.dangosil.cashflow.shared.enums.PaymentMethod;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

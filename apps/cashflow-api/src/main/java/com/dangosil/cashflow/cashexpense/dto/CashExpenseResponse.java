@@ -1,4 +1,4 @@
-package com.dangosil.cashflow.cashentry.dto;
+package com.dangosil.cashflow.cashexpense.dto;
 
 import com.dangosil.cashflow.shared.enums.PaymentMethod;
 import java.math.BigDecimal;
@@ -6,11 +6,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record CashEntryResponse(
+public record CashExpenseResponse(
         UUID id,
         String description,
         BigDecimal amount,
-        LocalDate entryDate,
+        LocalDate expenseDate,
         UUID categoryId,
         String categoryName,
         PaymentMethod paymentMethod,

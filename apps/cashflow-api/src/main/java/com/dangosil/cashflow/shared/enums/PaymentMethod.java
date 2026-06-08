@@ -1,4 +1,4 @@
-package com.dangosil.cashflow.cashentry.enums;
+package com.dangosil.cashflow.shared.enums;
 
 public enum PaymentMethod {
     PIX,

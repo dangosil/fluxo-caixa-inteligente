@@ -1,8 +1,8 @@
-package com.dangosil.cashflow.cashentry.controller;
+package com.dangosil.cashflow.cashexpense.controller;
 
-import com.dangosil.cashflow.cashentry.dto.CashEntryRequest;
-import com.dangosil.cashflow.cashentry.dto.CashEntryResponse;
-import com.dangosil.cashflow.cashentry.service.CashEntryService;
+import com.dangosil.cashflow.cashexpense.dto.CashExpenseRequest;
+import com.dangosil.cashflow.cashexpense.dto.CashExpenseResponse;
+import com.dangosil.cashflow.cashexpense.service.CashExpenseService;
 import com.dangosil.cashflow.shared.enums.PaymentMethod;
 import jakarta.validation.Valid;
 import java.net.URI;
@@ -22,47 +22,47 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/cash-entries")
-public class CashEntryController {
+@RequestMapping("/cash-expenses")
+public class CashExpenseController {
 
-    private final CashEntryService cashEntryService;
+    private final CashExpenseService cashExpenseService;
 
-    public CashEntryController(CashEntryService cashEntryService) {
-        this.cashEntryService = cashEntryService;
+    public CashExpenseController(CashExpenseService cashExpenseService) {
+        this.cashExpenseService = cashExpenseService;
     }
 
     @GetMapping
-    public List<CashEntryResponse> findAll(
+    public List<CashExpenseResponse> findAll(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) UUID categoryId,
             @RequestParam(required = false) PaymentMethod paymentMethod,
             @RequestParam(required = false) Boolean active
     ) {
-        return cashEntryService.findAll(startDate, endDate, categoryId, paymentMethod, active);
+        return cashExpenseService.findAll(startDate, endDate, categoryId, paymentMethod, active);
     }
 
     @GetMapping("/{id}")
-    public CashEntryResponse findById(@PathVariable UUID id) {
-        return cashEntryService.findById(id);
+    public CashExpenseResponse findById(@PathVariable UUID id) {
+        return cashExpenseService.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<CashEntryResponse> create(@Valid @RequestBody CashEntryRequest request) {
-        CashEntryResponse response = cashEntryService.create(request);
+    public ResponseEntity<CashExpenseResponse> create(@Valid @RequestBody CashExpenseRequest request) {
+        CashExpenseResponse response = cashExpenseService.create(request);
         return ResponseEntity
-                .created(URI.create("/cash-entries/" + response.id()))
+                .created(URI.create("/cash-expenses/" + response.id()))
                 .body(response);
     }
 
     @PutMapping("/{id}")
-    public CashEntryResponse update(@PathVariable UUID id, @Valid @RequestBody CashEntryRequest request) {
-        return cashEntryService.update(id, request);
+    public CashExpenseResponse update(@PathVariable UUID id, @Valid @RequestBody CashExpenseRequest request) {
+        return cashExpenseService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
-        cashEntryService.delete(id);
+        cashExpenseService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

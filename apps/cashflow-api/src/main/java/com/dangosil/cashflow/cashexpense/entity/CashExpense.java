@@ -1,4 +1,4 @@
-package com.dangosil.cashflow.cashentry.entity;
+package com.dangosil.cashflow.cashexpense.entity;
 
 import com.dangosil.cashflow.category.entity.Category;
 import com.dangosil.cashflow.shared.enums.PaymentMethod;
@@ -19,8 +19,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "cash_entries")
-public class CashEntry {
+@Table(name = "cash_expenses")
+public class CashExpense {
 
     @Id
     private UUID id;
@@ -31,8 +31,8 @@ public class CashEntry {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
-    @Column(name = "entry_date", nullable = false)
-    private LocalDate entryDate;
+    @Column(name = "expense_date", nullable = false)
+    private LocalDate expenseDate;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
@@ -54,13 +54,13 @@ public class CashEntry {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    protected CashEntry() {
+    protected CashExpense() {
     }
 
-    public CashEntry(
+    public CashExpense(
             String description,
             BigDecimal amount,
-            LocalDate entryDate,
+            LocalDate expenseDate,
             Category category,
             PaymentMethod paymentMethod,
             String notes
@@ -68,7 +68,7 @@ public class CashEntry {
         this.id = UUID.randomUUID();
         this.description = description;
         this.amount = amount;
-        this.entryDate = entryDate;
+        this.expenseDate = expenseDate;
         this.category = category;
         this.paymentMethod = paymentMethod;
         this.notes = notes;
@@ -99,8 +99,8 @@ public class CashEntry {
         return amount;
     }
 
-    public LocalDate getEntryDate() {
-        return entryDate;
+    public LocalDate getExpenseDate() {
+        return expenseDate;
     }
 
     public Category getCategory() {
@@ -130,14 +130,14 @@ public class CashEntry {
     public void update(
             String description,
             BigDecimal amount,
-            LocalDate entryDate,
+            LocalDate expenseDate,
             Category category,
             PaymentMethod paymentMethod,
             String notes
     ) {
         this.description = description;
         this.amount = amount;
-        this.entryDate = entryDate;
+        this.expenseDate = expenseDate;
         this.category = category;
         this.paymentMethod = paymentMethod;
         this.notes = notes;

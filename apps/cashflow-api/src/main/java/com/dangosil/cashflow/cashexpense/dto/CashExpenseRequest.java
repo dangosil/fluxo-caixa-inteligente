@@ -1,4 +1,4 @@
-package com.dangosil.cashflow.cashentry.dto;
+package com.dangosil.cashflow.cashexpense.dto;
 
 import com.dangosil.cashflow.shared.enums.PaymentMethod;
 import jakarta.validation.constraints.DecimalMin;
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record CashEntryRequest(
+public record CashExpenseRequest(
         @NotBlank
         @Size(min = 2, max = 120)
         String description,
@@ -19,7 +19,7 @@ public record CashEntryRequest(
         BigDecimal amount,
 
         @NotNull
-        LocalDate entryDate,
+        LocalDate expenseDate,
 
         @NotNull
         UUID categoryId,

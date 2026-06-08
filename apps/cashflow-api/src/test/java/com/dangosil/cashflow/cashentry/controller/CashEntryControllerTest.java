@@ -11,9 +11,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.dangosil.cashflow.cashentry.dto.CashEntryRequest;
 import com.dangosil.cashflow.cashentry.dto.CashEntryResponse;
-import com.dangosil.cashflow.cashentry.enums.PaymentMethod;
 import com.dangosil.cashflow.cashentry.service.CashEntryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dangosil.cashflow.shared.enums.PaymentMethod;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
