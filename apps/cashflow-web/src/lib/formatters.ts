@@ -4,3 +4,9 @@ export function formatCurrency(value: number) {
     currency: 'BRL',
   }).format(value)
 }
+
+export function formatDate(value: string) {
+  const [year, month, day] = value.split('-').map(Number)
+
+  return new Intl.DateTimeFormat('pt-BR').format(new Date(year, month - 1, day))
+}
