@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.dangosil.cashflow.cashsummary.dto.DailyCashSummaryResponse;
+import com.dangosil.cashflow.cashsummary.dto.MonthlyCashSummaryResponse;
 import com.dangosil.cashflow.cashsummary.service.CashSummaryService;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -39,6 +40,29 @@ class CashSummaryControllerTest {
         mockMvc.perform(get("/cash-summary/daily").param("date", "2026-06-08"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.date").value("2026-06-08"))
+                .andExpect(jsonPath("$.totalIncome").value(1500.00))
+                .andExpect(jsonPath("$.totalExpense").value(1200.00))
+                .andExpect(jsonPath("$.estimatedProfit").value(300.00));
+    }
+
+    @Test
+    void shouldReturnMonthlyCashSummary() throws Exception {
+        MonthlyCashSummaryResponse response = new MonthlyCashSummaryResponse(
+                2026,
+                6,
+                new BigDecimal("1500.00"),
+                new BigDecimal("1200.00"),
+                new BigDecimal("300.00")
+        );
+
+        when(cashSummaryService.getMonthlySummary(2026, 6)).thenReturn(response);
+
+        mockMvc.perform(get("/cash-summary/monthly")
+                        .param("year", "2026")
+                        .param("month", "6"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.year").value(2026))
+                .andExpect(jsonPath("$.month").value(6))
                 .andExpect(jsonPath("$.totalIncome").value(1500.00))
                 .andExpect(jsonPath("$.totalExpense").value(1200.00))
                 .andExpect(jsonPath("$.estimatedProfit").value(300.00));

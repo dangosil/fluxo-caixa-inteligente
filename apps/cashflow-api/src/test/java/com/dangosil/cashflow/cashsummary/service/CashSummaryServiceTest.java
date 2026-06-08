@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 import com.dangosil.cashflow.cashentry.repository.CashEntryRepository;
 import com.dangosil.cashflow.cashexpense.repository.CashExpenseRepository;
 import com.dangosil.cashflow.cashsummary.dto.DailyCashSummaryResponse;
+import com.dangosil.cashflow.cashsummary.dto.MonthlyCashSummaryResponse;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import org.junit.jupiter.api.Test;
@@ -51,6 +52,40 @@ class CashSummaryServiceTest {
         DailyCashSummaryResponse response = cashSummaryService.getDailySummary(date);
 
         assertThat(response.date()).isEqualTo(date);
+        assertThat(response.totalIncome()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(response.totalExpense()).isEqualByComparingTo(BigDecimal.ZERO);
+        assertThat(response.estimatedProfit()).isEqualByComparingTo(BigDecimal.ZERO);
+    }
+
+    @Test
+    void shouldCalculateMonthlyEstimatedProfit() {
+        LocalDate startDate = LocalDate.of(2026, 6, 1);
+        LocalDate endDate = LocalDate.of(2026, 6, 30);
+
+        when(cashEntryRepository.sumActiveAmountByEntryDateBetween(startDate, endDate)).thenReturn(new BigDecimal("1500.00"));
+        when(cashExpenseRepository.sumActiveAmountByExpenseDateBetween(startDate, endDate)).thenReturn(new BigDecimal("1200.00"));
+
+        MonthlyCashSummaryResponse response = cashSummaryService.getMonthlySummary(2026, 6);
+
+        assertThat(response.year()).isEqualTo(2026);
+        assertThat(response.month()).isEqualTo(6);
+        assertThat(response.totalIncome()).isEqualByComparingTo("1500.00");
+        assertThat(response.totalExpense()).isEqualByComparingTo("1200.00");
+        assertThat(response.estimatedProfit()).isEqualByComparingTo("300.00");
+    }
+
+    @Test
+    void shouldReturnZeroForMonthlySummaryWhenThereAreNoEntriesOrExpenses() {
+        LocalDate startDate = LocalDate.of(2026, 6, 1);
+        LocalDate endDate = LocalDate.of(2026, 6, 30);
+
+        when(cashEntryRepository.sumActiveAmountByEntryDateBetween(startDate, endDate)).thenReturn(null);
+        when(cashExpenseRepository.sumActiveAmountByExpenseDateBetween(startDate, endDate)).thenReturn(null);
+
+        MonthlyCashSummaryResponse response = cashSummaryService.getMonthlySummary(2026, 6);
+
+        assertThat(response.year()).isEqualTo(2026);
+        assertThat(response.month()).isEqualTo(6);
         assertThat(response.totalIncome()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(response.totalExpense()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(response.estimatedProfit()).isEqualByComparingTo(BigDecimal.ZERO);

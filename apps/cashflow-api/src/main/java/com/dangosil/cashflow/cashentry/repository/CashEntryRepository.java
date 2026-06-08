@@ -37,4 +37,16 @@ public interface CashEntryRepository extends JpaRepository<CashEntry, UUID> {
               AND cashEntry.entryDate = :entryDate
             """)
     BigDecimal sumActiveAmountByEntryDate(@Param("entryDate") LocalDate entryDate);
+
+    @Query("""
+            SELECT COALESCE(SUM(cashEntry.amount), 0)
+            FROM CashEntry cashEntry
+            WHERE cashEntry.active = true
+              AND cashEntry.entryDate >= :startDate
+              AND cashEntry.entryDate <= :endDate
+            """)
+    BigDecimal sumActiveAmountByEntryDateBetween(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }

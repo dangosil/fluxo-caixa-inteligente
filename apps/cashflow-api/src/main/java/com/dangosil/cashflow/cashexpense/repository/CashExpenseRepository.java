@@ -37,4 +37,16 @@ public interface CashExpenseRepository extends JpaRepository<CashExpense, UUID> 
               AND cashExpense.expenseDate = :expenseDate
             """)
     BigDecimal sumActiveAmountByExpenseDate(@Param("expenseDate") LocalDate expenseDate);
+
+    @Query("""
+            SELECT COALESCE(SUM(cashExpense.amount), 0)
+            FROM CashExpense cashExpense
+            WHERE cashExpense.active = true
+              AND cashExpense.expenseDate >= :startDate
+              AND cashExpense.expenseDate <= :endDate
+            """)
+    BigDecimal sumActiveAmountByExpenseDateBetween(
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate
+    );
 }
