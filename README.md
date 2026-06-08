@@ -90,6 +90,8 @@ Não existe tabela para resumo ou dashboard. Esses dados são calculados a parti
 
 ## Endpoints Atuais
 
+Exemplos de uso com `curl` estão em [`docs/api-examples.md`](docs/api-examples.md).
+
 ### Health
 
 ```txt
