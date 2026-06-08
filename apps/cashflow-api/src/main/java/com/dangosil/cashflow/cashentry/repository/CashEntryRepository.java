@@ -1,10 +1,11 @@
 package com.dangosil.cashflow.cashentry.repository;
 
 import com.dangosil.cashflow.cashentry.entity.CashEntry;
+import com.dangosil.cashflow.shared.enums.PaymentMethod;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import com.dangosil.cashflow.shared.enums.PaymentMethod;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,4 +29,12 @@ public interface CashEntryRepository extends JpaRepository<CashEntry, UUID> {
             @Param("paymentMethod") PaymentMethod paymentMethod,
             @Param("active") boolean active
     );
+
+    @Query("""
+            SELECT COALESCE(SUM(cashEntry.amount), 0)
+            FROM CashEntry cashEntry
+            WHERE cashEntry.active = true
+              AND cashEntry.entryDate = :entryDate
+            """)
+    BigDecimal sumActiveAmountByEntryDate(@Param("entryDate") LocalDate entryDate);
 }

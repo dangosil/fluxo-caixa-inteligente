@@ -2,6 +2,7 @@ package com.dangosil.cashflow.cashexpense.repository;
 
 import com.dangosil.cashflow.cashexpense.entity.CashExpense;
 import com.dangosil.cashflow.shared.enums.PaymentMethod;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -28,4 +29,12 @@ public interface CashExpenseRepository extends JpaRepository<CashExpense, UUID> 
             @Param("paymentMethod") PaymentMethod paymentMethod,
             @Param("active") boolean active
     );
+
+    @Query("""
+            SELECT COALESCE(SUM(cashExpense.amount), 0)
+            FROM CashExpense cashExpense
+            WHERE cashExpense.active = true
+              AND cashExpense.expenseDate = :expenseDate
+            """)
+    BigDecimal sumActiveAmountByExpenseDate(@Param("expenseDate") LocalDate expenseDate);
 }
