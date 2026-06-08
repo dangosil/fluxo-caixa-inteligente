@@ -16,10 +16,10 @@ public interface CashExpenseRepository extends JpaRepository<CashExpense, UUID> 
             SELECT cashExpense
             FROM CashExpense cashExpense
             WHERE cashExpense.active = :active
-              AND (:startDate IS NULL OR cashExpense.expenseDate >= :startDate)
-              AND (:endDate IS NULL OR cashExpense.expenseDate <= :endDate)
-              AND (:categoryId IS NULL OR cashExpense.category.id = :categoryId)
-              AND (:paymentMethod IS NULL OR cashExpense.paymentMethod = :paymentMethod)
+              AND cashExpense.expenseDate >= COALESCE(:startDate, cashExpense.expenseDate)
+              AND cashExpense.expenseDate <= COALESCE(:endDate, cashExpense.expenseDate)
+              AND cashExpense.category.id = COALESCE(:categoryId, cashExpense.category.id)
+              AND cashExpense.paymentMethod = COALESCE(:paymentMethod, cashExpense.paymentMethod)
             ORDER BY cashExpense.expenseDate DESC, cashExpense.createdAt DESC
             """)
     List<CashExpense> findAllWithFilters(

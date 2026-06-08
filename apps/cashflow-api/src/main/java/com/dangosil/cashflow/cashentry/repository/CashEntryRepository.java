@@ -16,10 +16,10 @@ public interface CashEntryRepository extends JpaRepository<CashEntry, UUID> {
             SELECT cashEntry
             FROM CashEntry cashEntry
             WHERE cashEntry.active = :active
-              AND (:startDate IS NULL OR cashEntry.entryDate >= :startDate)
-              AND (:endDate IS NULL OR cashEntry.entryDate <= :endDate)
-              AND (:categoryId IS NULL OR cashEntry.category.id = :categoryId)
-              AND (:paymentMethod IS NULL OR cashEntry.paymentMethod = :paymentMethod)
+              AND cashEntry.entryDate >= COALESCE(:startDate, cashEntry.entryDate)
+              AND cashEntry.entryDate <= COALESCE(:endDate, cashEntry.entryDate)
+              AND cashEntry.category.id = COALESCE(:categoryId, cashEntry.category.id)
+              AND cashEntry.paymentMethod = COALESCE(:paymentMethod, cashEntry.paymentMethod)
             ORDER BY cashEntry.entryDate DESC, cashEntry.createdAt DESC
             """)
     List<CashEntry> findAllWithFilters(
