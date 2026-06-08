@@ -1,0 +1,165 @@
+package com.dangosil.cashflow.cashentry.controller;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.dangosil.cashflow.cashentry.dto.CashEntryRequest;
+import com.dangosil.cashflow.cashentry.dto.CashEntryResponse;
+import com.dangosil.cashflow.cashentry.enums.PaymentMethod;
+import com.dangosil.cashflow.cashentry.service.CashEntryService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+@WebMvcTest(CashEntryController.class)
+class CashEntryControllerTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private CashEntryService cashEntryService;
+
+    @Test
+    void shouldCreateCashEntry() throws Exception {
+        UUID id = UUID.randomUUID();
+        UUID categoryId = UUID.randomUUID();
+        LocalDate entryDate = LocalDate.of(2026, 6, 8);
+        LocalDateTime now = LocalDateTime.of(2026, 6, 8, 14, 0);
+        CashEntryRequest request = new CashEntryRequest(
+                "Venda de produto",
+                new BigDecimal("1500.00"),
+                entryDate,
+                categoryId,
+                PaymentMethod.PIX,
+                "Recebimento registrado no caixa"
+        );
+        CashEntryResponse response = new CashEntryResponse(
+                id,
+                "Venda de produto",
+                new BigDecimal("1500.00"),
+                entryDate,
+                categoryId,
+                "Venda de produto",
+                PaymentMethod.PIX,
+                "Recebimento registrado no caixa",
+                true,
+                now,
+                now
+        );
+
+        when(cashEntryService.create(any(CashEntryRequest.class))).thenReturn(response);
+
+        mockMvc.perform(post("/cash-entries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(header().string("Location", "/cash-entries/" + id))
+                .andExpect(jsonPath("$.id").value(id.toString()))
+                .andExpect(jsonPath("$.description").value("Venda de produto"))
+                .andExpect(jsonPath("$.amount").value(1500.00))
+                .andExpect(jsonPath("$.categoryId").value(categoryId.toString()))
+                .andExpect(jsonPath("$.paymentMethod").value("PIX"))
+                .andExpect(jsonPath("$.active").value(true));
+    }
+
+    @Test
+    void shouldFindCashEntries() throws Exception {
+        UUID id = UUID.randomUUID();
+        UUID categoryId = UUID.randomUUID();
+        LocalDate entryDate = LocalDate.of(2026, 6, 8);
+        LocalDateTime now = LocalDateTime.of(2026, 6, 8, 14, 0);
+        CashEntryResponse response = new CashEntryResponse(
+                id,
+                "Venda de produto",
+                new BigDecimal("1500.00"),
+                entryDate,
+                categoryId,
+                "Venda de produto",
+                PaymentMethod.PIX,
+                null,
+                true,
+                now,
+                now
+        );
+
+        when(cashEntryService.findAll(eq(entryDate), eq(entryDate), eq(categoryId), eq(PaymentMethod.PIX), eq(true)))
+                .thenReturn(List.of(response));
+
+        mockMvc.perform(get("/cash-entries")
+                        .param("startDate", "2026-06-08")
+                        .param("endDate", "2026-06-08")
+                        .param("categoryId", categoryId.toString())
+                        .param("paymentMethod", "PIX")
+                        .param("active", "true"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(id.toString()))
+                .andExpect(jsonPath("$[0].description").value("Venda de produto"))
+                .andExpect(jsonPath("$[0].paymentMethod").value("PIX"));
+    }
+
+    @Test
+    void shouldFindCashEntryById() throws Exception {
+        UUID id = UUID.randomUUID();
+        UUID categoryId = UUID.randomUUID();
+        LocalDate entryDate = LocalDate.of(2026, 6, 8);
+        LocalDateTime now = LocalDateTime.of(2026, 6, 8, 14, 0);
+        CashEntryResponse response = new CashEntryResponse(
+                id,
+                "Venda de produto",
+                new BigDecimal("1500.00"),
+                entryDate,
+                categoryId,
+                "Venda de produto",
+                PaymentMethod.PIX,
+                null,
+                true,
+                now,
+                now
+        );
+
+        when(cashEntryService.findById(id)).thenReturn(response);
+
+        mockMvc.perform(get("/cash-entries/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id.toString()))
+                .andExpect(jsonPath("$.description").value("Venda de produto"));
+    }
+
+    @Test
+    void shouldReturnValidationErrorWhenRequestIsInvalid() throws Exception {
+        CashEntryRequest request = new CashEntryRequest(
+                "",
+                BigDecimal.ZERO,
+                null,
+                null,
+                null,
+                "valid note"
+        );
+
+        mockMvc.perform(post("/cash-entries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"))
+                .andExpect(jsonPath("$.details").isArray());
+    }
+}

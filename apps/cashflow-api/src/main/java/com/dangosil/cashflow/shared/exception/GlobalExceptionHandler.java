@@ -10,6 +10,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponse> handleBusiness(BusinessException exception) {
+        ErrorResponse response = new ErrorResponse(
+                "BUSINESS_ERROR",
+                exception.getMessage(),
+                List.of()
+        );
+        return ResponseEntity.badRequest().body(response);
+    }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException exception) {
         ErrorResponse response = new ErrorResponse(
