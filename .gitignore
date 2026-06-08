@@ -1,0 +1,34 @@
+# Java / Maven
+target/
+*.class
+
+# IntelliJ
+.idea/
+*.iml
+out/
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+
+# Local agent/task instructions
+AGENTS.md
+agents.md
+docs/agents.md
+docs/todolist.md
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes/local
+postgres_data/
+
+# Node future frontend
+node_modules/
+.next/
+dist/
+build/

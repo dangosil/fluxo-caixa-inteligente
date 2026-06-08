@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: cashflow-api
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/cashflow
+    username: cashflow_user
+    password: cashflow_pass
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+  flyway:
+    enabled: true
