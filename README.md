@@ -1,85 +1,176 @@
-# CashFlow ERP — MVP de Fluxo de Caixa
+# Fluxo de Caixa Inteligente — Backend MVP
 
-Sistema de fluxo de caixa empresarial focado inicialmente em uma empresa cliente.
+Backend Java/Spring Boot para controle simples de fluxo de caixa.
 
-## Escopo inicial
+O MVP atual trabalha em **base única/local**, sem cadastro de empresa, sem `companyId`, sem autenticação e sem multiempresa. O foco é registrar categorias, entradas, saídas e calcular lucro estimado diário/mensal.
 
-A primeira versão deve permitir:
+## Escopo Atual
 
-- cadastro de entradas;
-- cadastro de saídas;
-- categorias;
-- resumo diário;
-- resumo mensal;
-- lucro estimado diário e mensal;
-- dashboard simples.
+- Categorias de entrada e saída.
+- Entradas de caixa.
+- Saídas de caixa.
+- Listagem de lançamentos por filtros simples.
+- Resumo diário.
+- Resumo mensal.
+- Dashboard simples de resumo financeiro.
 
-## Regra principal
+Fora do MVP atual:
 
-```txt
-Lucro estimado = Total de entradas - Total de saídas
-```
+- login/autenticação;
+- frontend;
+- estoque;
+- fiscal;
+- integrações;
+- multiempresa;
+- funcionalidades de ERP completo.
+
+## Pré-requisitos
+
+- Java 21
+- Maven Wrapper
+- Docker
+- Docker Compose
 
 ## Stack
 
 - Java 21
-- Spring Boot
+- Spring Boot 3.5.14
 - Maven
 - PostgreSQL
 - Flyway
-- JPA
+- Spring Data JPA
 - Bean Validation
 - JUnit 5
 - Mockito
 - Testcontainers
-- IntelliJ IDEA
+- MockMvc
 
-## Estrutura planejada
+## Estrutura
 
 ```txt
 cashflow-erp/
 ├── apps/
-│   └── api/
+│   └── cashflow-api/
 ├── docs/
-│   ├── requisitos-iniciais.md
-│   └── apresentacao-funcionalidades.md
 ├── docker-compose.yml
-├── README.md
-└── .gitignore
+└── README.md
 ```
 
-## Como executar localmente
+## Banco Local
 
-Subir banco:
+Subir PostgreSQL com Docker Compose:
 
-```bash
+```powershell
 docker compose up -d
 ```
 
-Rodar API:
+As credenciais em `docker-compose.yml` e `apps/cashflow-api/src/main/resources/application.yaml` são apenas para desenvolvimento local.
 
-```bash
-cd apps/api
-./mvnw spring-boot:run
+## Rodar API
+
+```powershell
+cd apps/cashflow-api
+.\mvnw.cmd spring-boot:run
 ```
 
-Rodar testes:
+## Rodar Testes
 
-```bash
-cd apps/api
-./mvnw test
+```powershell
+cd apps/cashflow-api
+.\mvnw.cmd test
 ```
 
-Verificação completa:
+## Migrations Atuais
 
-```bash
-cd apps/api
-./mvnw clean verify
+- `V1__create_categories_table.sql`
+- `V2__create_cash_entries_table.sql`
+- `V3__create_cash_expenses_table.sql`
+
+Não existe tabela para resumo ou dashboard. Esses dados são calculados a partir dos lançamentos ativos.
+
+## Endpoints Atuais
+
+### Health
+
+```txt
+GET /health
 ```
 
-## Documentos importantes
+### Categories
 
-Antes de implementar, leia:
+```txt
+GET    /categories
+GET    /categories/{id}
+POST   /categories
+PUT    /categories/{id}
+DELETE /categories/{id}
+```
 
-1. `docs/requisitos-iniciais.md`
-2. `docs/apresentacao-funcionalidades.md`
+Filtros disponíveis:
+
+```txt
+GET /categories?type=INCOME&active=true
+GET /categories?type=EXPENSE&active=true
+```
+
+### Cash Entries
+
+```txt
+GET    /cash-entries
+GET    /cash-entries/{id}
+POST   /cash-entries
+PUT    /cash-entries/{id}
+DELETE /cash-entries/{id}
+```
+
+Filtros disponíveis:
+
+```txt
+GET /cash-entries?startDate=2026-06-01&endDate=2026-06-30
+GET /cash-entries?categoryId={uuid}&paymentMethod=PIX&active=true
+```
+
+### Cash Expenses
+
+```txt
+GET    /cash-expenses
+GET    /cash-expenses/{id}
+POST   /cash-expenses
+PUT    /cash-expenses/{id}
+DELETE /cash-expenses/{id}
+```
+
+Filtros disponíveis:
+
+```txt
+GET /cash-expenses?startDate=2026-06-01&endDate=2026-06-30
+GET /cash-expenses?categoryId={uuid}&paymentMethod=PIX&active=true
+```
+
+### Cash Summary
+
+```txt
+GET /cash-summary/daily?date=YYYY-MM-DD
+GET /cash-summary/monthly?year=YYYY&month=MM
+```
+
+### Dashboard
+
+```txt
+GET /dashboard/summary
+GET /dashboard/summary?date=YYYY-MM-DD
+```
+
+Quando `date` não é informado, o backend usa a data atual.
+
+## Regra Financeira
+
+```txt
+estimatedProfit = totalIncome - totalExpense
+```
+
+O valor representa lucro estimado do fluxo de caixa registrado. Não é lucro contábil formal.
+
+## Segurança de Dados
+
+Este repositório não deve conter dados reais de cliente, segredos, chaves privadas ou credenciais de produção.
