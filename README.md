@@ -1,37 +1,33 @@
-# Fluxo de Caixa Inteligente — Backend MVP
+# Fluxo de Caixa Inteligente - Full-stack MVP
 
-Backend Java/Spring Boot para controle simples de fluxo de caixa.
+Aplicacao web para controle simples de fluxo de caixa, com backend Java/Spring Boot e frontend React/TypeScript/Vite.
 
-O MVP atual trabalha em **base única/local**, sem cadastro de empresa, sem `companyId`, sem autenticação e sem multiempresa. O foco é registrar categorias, entradas, saídas e calcular lucro estimado diário/mensal.
+O MVP atual trabalha em **base unica/local**, sem cadastro de empresa, sem `companyId`, sem login/autenticacao e sem multiempresa. O foco e registrar categorias, entradas, saidas e calcular lucro estimado diario/mensal.
 
 ## Escopo Atual
 
-- Categorias de entrada e saída.
+- Categorias de entrada e saida.
 - Entradas de caixa.
-- Saídas de caixa.
-- Listagem de lançamentos por filtros simples.
-- Resumo diário.
+- Saidas de caixa.
+- Listagem de lancamentos por filtros simples.
+- Resumo diario.
 - Resumo mensal.
 - Dashboard simples de resumo financeiro.
+- Interface web para operar o MVP.
 
 Fora do MVP atual:
 
-- login/autenticação;
-- frontend;
+- login/autenticacao;
+- multiempresa;
+- `companyId`;
 - estoque;
 - fiscal;
-- integrações;
-- multiempresa;
+- integracoes;
 - funcionalidades de ERP completo.
 
-## Pré-requisitos
-
-- Java 21
-- Maven Wrapper
-- Docker
-- Docker Compose
-
 ## Stack
+
+### Backend
 
 - Java 21
 - Spring Boot 3.5.14
@@ -45,16 +41,39 @@ Fora do MVP atual:
 - Testcontainers
 - MockMvc
 
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- TanStack Query
+- Axios
+- React Hook Form
+- Zod
+- Lucide React
+
 ## Estrutura
 
 ```txt
 cashflow-erp/
 ├── apps/
-│   └── cashflow-api/
+│   ├── cashflow-api/
+│   └── cashflow-web/
 ├── docs/
 ├── docker-compose.yml
 └── README.md
 ```
+
+## Pre-requisitos
+
+- Java 21
+- Maven Wrapper
+- Node.js
+- npm
+- Docker
+- Docker Compose
 
 ## Banco Local
 
@@ -64,20 +83,43 @@ Subir PostgreSQL com Docker Compose:
 docker compose up -d
 ```
 
-As credenciais em `docker-compose.yml` e `apps/cashflow-api/src/main/resources/application.yaml` são apenas para desenvolvimento local.
+As credenciais em `docker-compose.yml` e `apps/cashflow-api/src/main/resources/application.yaml` sao apenas para desenvolvimento local.
 
-## Rodar API
+## Rodar Backend
 
 ```powershell
 cd apps/cashflow-api
 .\mvnw.cmd spring-boot:run
 ```
 
-## Rodar Testes
+A API roda localmente em:
+
+```txt
+http://localhost:8080
+```
+
+## Rodar Testes do Backend
 
 ```powershell
 cd apps/cashflow-api
 .\mvnw.cmd test
+```
+
+## Rodar Frontend
+
+```powershell
+cd apps/cashflow-web
+npm install
+npm run dev
+```
+
+O Vite serve o frontend localmente e encaminha chamadas `/api` para `http://localhost:8080`.
+
+## Rodar Build do Frontend
+
+```powershell
+cd apps/cashflow-web
+npm run build
 ```
 
 ## Migrations Atuais
@@ -86,11 +128,11 @@ cd apps/cashflow-api
 - `V2__create_cash_entries_table.sql`
 - `V3__create_cash_expenses_table.sql`
 
-Não existe tabela para resumo ou dashboard. Esses dados são calculados a partir dos lançamentos ativos.
+Nao existe tabela para resumo ou dashboard. Esses dados sao calculados a partir dos lancamentos ativos.
 
 ## Endpoints Atuais
 
-Exemplos de uso com `curl` estão em [`docs/api-examples.md`](docs/api-examples.md).
+Exemplos de uso com `curl` estao em [`docs/api-examples.md`](docs/api-examples.md).
 
 ### Health
 
@@ -108,7 +150,7 @@ PUT    /categories/{id}
 DELETE /categories/{id}
 ```
 
-Filtros disponíveis:
+Filtros disponiveis:
 
 ```txt
 GET /categories?type=INCOME&active=true
@@ -125,7 +167,7 @@ PUT    /cash-entries/{id}
 DELETE /cash-entries/{id}
 ```
 
-Filtros disponíveis:
+Filtros disponiveis:
 
 ```txt
 GET /cash-entries?startDate=2026-06-01&endDate=2026-06-30
@@ -142,7 +184,7 @@ PUT    /cash-expenses/{id}
 DELETE /cash-expenses/{id}
 ```
 
-Filtros disponíveis:
+Filtros disponiveis:
 
 ```txt
 GET /cash-expenses?startDate=2026-06-01&endDate=2026-06-30
@@ -163,7 +205,13 @@ GET /dashboard/summary
 GET /dashboard/summary?date=YYYY-MM-DD
 ```
 
-Quando `date` não é informado, o backend usa a data atual.
+Quando `date` nao e informado, o backend usa a data atual.
+
+## Frontend
+
+O frontend em `apps/cashflow-web` consome a API Spring Boot usando o proxy `/api` configurado no Vite. A interface atual possui dashboard, listagem, filtros e cadastro de categorias, entradas e saidas.
+
+Requisitos do frontend: [`docs/frontend-requirements.md`](docs/frontend-requirements.md).
 
 ## Regra Financeira
 
@@ -171,8 +219,8 @@ Quando `date` não é informado, o backend usa a data atual.
 estimatedProfit = totalIncome - totalExpense
 ```
 
-O valor representa lucro estimado do fluxo de caixa registrado. Não é lucro contábil formal.
+O valor representa lucro estimado do fluxo de caixa registrado. Nao e lucro contabil formal.
 
-## Segurança de Dados
+## Seguranca de Dados
 
-Este repositório não deve conter dados reais de cliente, segredos, chaves privadas ou credenciais de produção.
+Este repositorio nao deve conter dados reais, segredos, chaves privadas ou credenciais de producao.
