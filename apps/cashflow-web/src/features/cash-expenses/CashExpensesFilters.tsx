@@ -1,5 +1,5 @@
 import type { Category } from '../categories/types'
-import { paymentMethodOptions } from '../cash-entries/paymentMethodLabels'
+import { paymentMethodOptions } from '../../lib/paymentMethodLabels'
 
 import type { CashExpenseFilters } from './types'
 

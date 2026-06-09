@@ -2,7 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
-import { paymentMethodOptions } from '../cash-entries/paymentMethodLabels'
+import { paymentMethodOptions } from '../../lib/paymentMethodLabels'
 import type { Category } from '../categories/types'
 
 import type { CreateCashExpenseRequest } from './types'

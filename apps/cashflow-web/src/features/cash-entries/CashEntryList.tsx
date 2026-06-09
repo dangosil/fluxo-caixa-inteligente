@@ -1,7 +1,7 @@
 import { formatCurrency, formatDate } from '../../lib/formatters'
+import { PaymentMethodBadge } from '../../components/shared/PaymentMethodBadge'
+import { StatusBadge } from '../../components/shared/StatusBadge'
 
-import { CashEntryStatusBadge } from './CashEntryStatusBadge'
-import { PaymentMethodBadge } from './PaymentMethodBadge'
 import type { CashEntry } from './types'
 
 type CashEntryListProps = {
@@ -36,7 +36,7 @@ export function CashEntryList({ entries }: CashEntryListProps) {
               <PaymentMethodBadge paymentMethod={entry.paymentMethod} />
             </div>
             <div>
-              <CashEntryStatusBadge active={entry.active} />
+              <StatusBadge active={entry.active} />
             </div>
           </li>
         ))}

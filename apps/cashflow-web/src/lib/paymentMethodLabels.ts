@@ -1,4 +1,4 @@
-import type { PaymentMethod } from '../../types/api'
+import type { PaymentMethod } from '../types/api'
 
 export const paymentMethodLabels: Record<PaymentMethod, string> = {
   PIX: 'Pix',

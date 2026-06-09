@@ -1,10 +1,10 @@
 import { CreditCard } from 'lucide-react'
 
-import { paymentMethodLabels } from './paymentMethodLabels'
-import type { CashEntry } from './types'
+import { paymentMethodLabels } from '../../lib/paymentMethodLabels'
+import type { PaymentMethod } from '../../types/api'
 
 type PaymentMethodBadgeProps = {
-  paymentMethod: CashEntry['paymentMethod']
+  paymentMethod: PaymentMethod
 }
 
 export function PaymentMethodBadge({ paymentMethod }: PaymentMethodBadgeProps) {

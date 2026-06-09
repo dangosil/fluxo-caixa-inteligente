@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 import type { Category } from '../categories/types'
 
-import { paymentMethodOptions } from './paymentMethodLabels'
+import { paymentMethodOptions } from '../../lib/paymentMethodLabels'
 import type { CreateCashEntryRequest } from './types'
 
 const cashEntrySchema = z.object({

@@ -1,6 +1,6 @@
 import type { Category } from '../categories/types'
 
-import { paymentMethodOptions } from './paymentMethodLabels'
+import { paymentMethodOptions } from '../../lib/paymentMethodLabels'
 import type { CashEntryFilters } from './types'
 
 type CashEntriesFiltersProps = {

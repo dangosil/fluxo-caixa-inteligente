@@ -1,4 +1,5 @@
-import { CategoryStatusBadge } from './CategoryStatusBadge'
+import { StatusBadge } from '../../components/shared/StatusBadge'
+
 import { CategoryTypeBadge } from './CategoryTypeBadge'
 import type { Category } from './types'
 
@@ -29,7 +30,7 @@ export function CategoryList({ categories }: CategoryListProps) {
               <CategoryTypeBadge type={category.type} />
             </div>
             <div>
-              <CategoryStatusBadge active={category.active} />
+              <StatusBadge active={category.active} />
             </div>
           </li>
         ))}
