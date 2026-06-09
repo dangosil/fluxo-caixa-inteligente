@@ -1,5 +1,7 @@
 package com.dangosil.cashflow.cashentry.dto;
 
+import com.dangosil.cashflow.cashentry.enums.CardBrand;
+import com.dangosil.cashflow.cashentry.enums.FeePayer;
 import com.dangosil.cashflow.shared.enums.PaymentMethod;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,6 +17,13 @@ public record CashEntryResponse(
         String categoryName,
         PaymentMethod paymentMethod,
         String notes,
+        BigDecimal feeAmount,
+        FeePayer feePayer,
+        CardBrand cardBrand,
+        int installmentCount,
+        BigDecimal installmentAmount,
+        BigDecimal customerPaidAmount,
+        BigDecimal receivedAmount,
         boolean active,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

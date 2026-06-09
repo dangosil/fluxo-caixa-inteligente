@@ -1,5 +1,7 @@
 package com.dangosil.cashflow.cashentry.entity;
 
+import com.dangosil.cashflow.cashentry.enums.CardBrand;
+import com.dangosil.cashflow.cashentry.enums.FeePayer;
 import com.dangosil.cashflow.category.entity.Category;
 import com.dangosil.cashflow.shared.enums.PaymentMethod;
 import jakarta.persistence.Column;
@@ -30,6 +32,23 @@ public class CashEntry {
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
+
+    @Column(name = "fee_amount", nullable = false, precision = 15, scale = 2)
+    private BigDecimal feeAmount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "fee_payer", nullable = false, length = 20)
+    private FeePayer feePayer;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "card_brand", length = 30)
+    private CardBrand cardBrand;
+
+    @Column(name = "installment_count", nullable = false)
+    private int installmentCount;
+
+    @Column(name = "installment_amount", precision = 15, scale = 2)
+    private BigDecimal installmentAmount;
 
     @Column(name = "entry_date", nullable = false)
     private LocalDate entryDate;
@@ -65,6 +84,34 @@ public class CashEntry {
             PaymentMethod paymentMethod,
             String notes
     ) {
+        this(
+                description,
+                amount,
+                entryDate,
+                category,
+                paymentMethod,
+                notes,
+                BigDecimal.ZERO,
+                FeePayer.MERCHANT,
+                null,
+                1,
+                null
+        );
+    }
+
+    public CashEntry(
+            String description,
+            BigDecimal amount,
+            LocalDate entryDate,
+            Category category,
+            PaymentMethod paymentMethod,
+            String notes,
+            BigDecimal feeAmount,
+            FeePayer feePayer,
+            CardBrand cardBrand,
+            int installmentCount,
+            BigDecimal installmentAmount
+    ) {
         this.id = UUID.randomUUID();
         this.description = description;
         this.amount = amount;
@@ -72,6 +119,11 @@ public class CashEntry {
         this.category = category;
         this.paymentMethod = paymentMethod;
         this.notes = notes;
+        this.feeAmount = feeAmount;
+        this.feePayer = feePayer;
+        this.cardBrand = cardBrand;
+        this.installmentCount = installmentCount;
+        this.installmentAmount = installmentAmount;
         this.active = true;
     }
 
@@ -96,6 +148,40 @@ public class CashEntry {
     }
 
     public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public BigDecimal getFeeAmount() {
+        return feeAmount;
+    }
+
+    public FeePayer getFeePayer() {
+        return feePayer;
+    }
+
+    public CardBrand getCardBrand() {
+        return cardBrand;
+    }
+
+    public int getInstallmentCount() {
+        return installmentCount;
+    }
+
+    public BigDecimal getInstallmentAmount() {
+        return installmentAmount;
+    }
+
+    public BigDecimal getCustomerPaidAmount() {
+        if (feePayer == FeePayer.CUSTOMER) {
+            return amount.add(feeAmount);
+        }
+        return amount;
+    }
+
+    public BigDecimal getReceivedAmount() {
+        if (feePayer == FeePayer.MERCHANT) {
+            return amount.subtract(feeAmount);
+        }
         return amount;
     }
 
@@ -133,7 +219,12 @@ public class CashEntry {
             LocalDate entryDate,
             Category category,
             PaymentMethod paymentMethod,
-            String notes
+            String notes,
+            BigDecimal feeAmount,
+            FeePayer feePayer,
+            CardBrand cardBrand,
+            int installmentCount,
+            BigDecimal installmentAmount
     ) {
         this.description = description;
         this.amount = amount;
@@ -141,6 +232,11 @@ public class CashEntry {
         this.category = category;
         this.paymentMethod = paymentMethod;
         this.notes = notes;
+        this.feeAmount = feeAmount;
+        this.feePayer = feePayer;
+        this.cardBrand = cardBrand;
+        this.installmentCount = installmentCount;
+        this.installmentAmount = installmentAmount;
     }
 
     public void deactivate() {

@@ -11,6 +11,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.dangosil.cashflow.cashentry.dto.CashEntryRequest;
 import com.dangosil.cashflow.cashentry.dto.CashEntryResponse;
+import com.dangosil.cashflow.cashentry.enums.CardBrand;
+import com.dangosil.cashflow.cashentry.enums.FeePayer;
 import com.dangosil.cashflow.cashentry.service.CashEntryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.dangosil.cashflow.shared.enums.PaymentMethod;
@@ -50,7 +52,12 @@ class CashEntryControllerTest {
                 entryDate,
                 categoryId,
                 PaymentMethod.PIX,
-                "Recebimento registrado no caixa"
+                "Recebimento registrado no caixa",
+                new BigDecimal("30.00"),
+                FeePayer.MERCHANT,
+                CardBrand.VISA,
+                2,
+                new BigDecimal("750.00")
         );
         CashEntryResponse response = new CashEntryResponse(
                 id,
@@ -61,6 +68,13 @@ class CashEntryControllerTest {
                 "Venda de produto",
                 PaymentMethod.PIX,
                 "Recebimento registrado no caixa",
+                new BigDecimal("30.00"),
+                FeePayer.MERCHANT,
+                CardBrand.VISA,
+                2,
+                new BigDecimal("750.00"),
+                new BigDecimal("1500.00"),
+                new BigDecimal("1470.00"),
                 true,
                 now,
                 now
@@ -78,6 +92,13 @@ class CashEntryControllerTest {
                 .andExpect(jsonPath("$.amount").value(1500.00))
                 .andExpect(jsonPath("$.categoryId").value(categoryId.toString()))
                 .andExpect(jsonPath("$.paymentMethod").value("PIX"))
+                .andExpect(jsonPath("$.feeAmount").value(30.00))
+                .andExpect(jsonPath("$.feePayer").value("MERCHANT"))
+                .andExpect(jsonPath("$.cardBrand").value("VISA"))
+                .andExpect(jsonPath("$.installmentCount").value(2))
+                .andExpect(jsonPath("$.installmentAmount").value(750.00))
+                .andExpect(jsonPath("$.customerPaidAmount").value(1500.00))
+                .andExpect(jsonPath("$.receivedAmount").value(1470.00))
                 .andExpect(jsonPath("$.active").value(true));
     }
 
@@ -96,6 +117,13 @@ class CashEntryControllerTest {
                 "Venda de produto",
                 PaymentMethod.PIX,
                 null,
+                BigDecimal.ZERO,
+                FeePayer.MERCHANT,
+                null,
+                1,
+                null,
+                new BigDecimal("1500.00"),
+                new BigDecimal("1500.00"),
                 true,
                 now,
                 now
@@ -131,6 +159,13 @@ class CashEntryControllerTest {
                 "Venda de produto",
                 PaymentMethod.PIX,
                 null,
+                BigDecimal.ZERO,
+                FeePayer.MERCHANT,
+                null,
+                1,
+                null,
+                new BigDecimal("1500.00"),
+                new BigDecimal("1500.00"),
                 true,
                 now,
                 now
@@ -152,7 +187,12 @@ class CashEntryControllerTest {
                 null,
                 null,
                 null,
-                "valid note"
+                "valid note",
+                new BigDecimal("-1.00"),
+                null,
+                null,
+                0,
+                new BigDecimal("-1.00")
         );
 
         mockMvc.perform(post("/cash-entries")

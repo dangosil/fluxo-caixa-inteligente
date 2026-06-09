@@ -31,7 +31,13 @@ public interface CashEntryRepository extends JpaRepository<CashEntry, UUID> {
     );
 
     @Query("""
-            SELECT COALESCE(SUM(cashEntry.amount), 0)
+            SELECT COALESCE(SUM(
+                CASE
+                    WHEN cashEntry.feePayer = com.dangosil.cashflow.cashentry.enums.FeePayer.MERCHANT
+                        THEN cashEntry.amount - cashEntry.feeAmount
+                    ELSE cashEntry.amount
+                END
+            ), 0)
             FROM CashEntry cashEntry
             WHERE cashEntry.active = true
               AND cashEntry.entryDate = :entryDate
@@ -39,7 +45,13 @@ public interface CashEntryRepository extends JpaRepository<CashEntry, UUID> {
     BigDecimal sumActiveAmountByEntryDate(@Param("entryDate") LocalDate entryDate);
 
     @Query("""
-            SELECT COALESCE(SUM(cashEntry.amount), 0)
+            SELECT COALESCE(SUM(
+                CASE
+                    WHEN cashEntry.feePayer = com.dangosil.cashflow.cashentry.enums.FeePayer.MERCHANT
+                        THEN cashEntry.amount - cashEntry.feeAmount
+                    ELSE cashEntry.amount
+                END
+            ), 0)
             FROM CashEntry cashEntry
             WHERE cashEntry.active = true
               AND cashEntry.entryDate >= :startDate

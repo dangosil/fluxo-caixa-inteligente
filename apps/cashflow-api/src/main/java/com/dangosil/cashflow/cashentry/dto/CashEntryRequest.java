@@ -1,7 +1,10 @@
 package com.dangosil.cashflow.cashentry.dto;
 
+import com.dangosil.cashflow.cashentry.enums.CardBrand;
+import com.dangosil.cashflow.cashentry.enums.FeePayer;
 import com.dangosil.cashflow.shared.enums.PaymentMethod;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -28,6 +31,19 @@ public record CashEntryRequest(
         PaymentMethod paymentMethod,
 
         @Size(max = 500)
-        String notes
+        String notes,
+
+        @DecimalMin(value = "0.00")
+        BigDecimal feeAmount,
+
+        FeePayer feePayer,
+
+        CardBrand cardBrand,
+
+        @Min(1)
+        Integer installmentCount,
+
+        @DecimalMin(value = "0.00")
+        BigDecimal installmentAmount
 ) {
 }

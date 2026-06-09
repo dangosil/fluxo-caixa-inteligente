@@ -3,6 +3,7 @@ package com.dangosil.cashflow;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dangosil.cashflow.cashentry.entity.CashEntry;
+import com.dangosil.cashflow.cashentry.enums.FeePayer;
 import com.dangosil.cashflow.cashentry.repository.CashEntryRepository;
 import com.dangosil.cashflow.category.entity.Category;
 import com.dangosil.cashflow.category.enums.CategoryType;
@@ -49,6 +50,11 @@ class CashEntryRepositoryIntegrationTest {
                 targetDate,
                 incomeCategory,
                 PaymentMethod.PIX,
+                null,
+                new BigDecimal("10.00"),
+                FeePayer.MERCHANT,
+                null,
+                1,
                 null
         ));
         cashEntryRepository.save(new CashEntry(
@@ -57,6 +63,11 @@ class CashEntryRepositoryIntegrationTest {
                 targetDate,
                 incomeCategory,
                 PaymentMethod.CASH,
+                null,
+                new BigDecimal("5.00"),
+                FeePayer.CUSTOMER,
+                null,
+                1,
                 null
         ));
         CashEntry inactiveEntry = new CashEntry(
@@ -80,7 +91,7 @@ class CashEntryRepositoryIntegrationTest {
 
         BigDecimal total = cashEntryRepository.sumActiveAmountByEntryDate(targetDate);
 
-        assertThat(total).isEqualByComparingTo("350.50");
+        assertThat(total).isEqualByComparingTo("340.50");
     }
 
     @Test
@@ -95,6 +106,11 @@ class CashEntryRepositoryIntegrationTest {
                 startDate,
                 incomeCategory,
                 PaymentMethod.PIX,
+                null,
+                new BigDecimal("10.00"),
+                FeePayer.MERCHANT,
+                null,
+                1,
                 null
         ));
         cashEntryRepository.save(new CashEntry(
@@ -103,6 +119,11 @@ class CashEntryRepositoryIntegrationTest {
                 endDate,
                 incomeCategory,
                 PaymentMethod.BANK_TRANSFER,
+                null,
+                new BigDecimal("15.00"),
+                FeePayer.CUSTOMER,
+                null,
+                1,
                 null
         ));
         CashEntry inactiveEntry = new CashEntry(
@@ -126,7 +147,7 @@ class CashEntryRepositoryIntegrationTest {
 
         BigDecimal total = cashEntryRepository.sumActiveAmountByEntryDateBetween(startDate, endDate);
 
-        assertThat(total).isEqualByComparingTo("400.00");
+        assertThat(total).isEqualByComparingTo("390.00");
     }
 
     @Test
