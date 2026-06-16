@@ -54,6 +54,7 @@ class CashEntryServiceTest {
         assertThat(response.description()).isEqualTo("Venda de produto");
         assertThat(response.amount()).isEqualByComparingTo("1500.00");
         assertThat(response.entryDate()).isEqualTo(LocalDate.of(2026, 6, 8));
+        assertThat(response.expectedReceiptDate()).isEqualTo(LocalDate.of(2026, 6, 8));
         assertThat(response.categoryId()).isEqualTo(category.getId());
         assertThat(response.categoryName()).isEqualTo("Venda de produto");
         assertThat(response.paymentMethod()).isEqualTo(PaymentMethod.PIX);
@@ -63,6 +64,34 @@ class CashEntryServiceTest {
         assertThat(response.customerPaidAmount()).isEqualByComparingTo("1500.00");
         assertThat(response.receivedAmount()).isEqualByComparingTo("1500.00");
         assertThat(response.active()).isTrue();
+    }
+
+    @Test
+    void shouldCreateCashEntryWithDifferentExpectedReceiptDate() {
+        Category category = new Category("Venda de produto", CategoryType.INCOME);
+        LocalDate expectedReceiptDate = LocalDate.of(2026, 6, 10);
+        CashEntryRequest request = new CashEntryRequest(
+                "Venda de produto",
+                new BigDecimal("1500.00"),
+                LocalDate.of(2026, 6, 8),
+                expectedReceiptDate,
+                category.getId(),
+                PaymentMethod.CREDIT_CARD,
+                "Recebimento previsto no cartao",
+                null,
+                null,
+                CardBrand.VISA,
+                null,
+                null
+        );
+
+        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
+        when(cashEntryRepository.save(any(CashEntry.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        CashEntryResponse response = cashEntryService.create(request);
+
+        assertThat(response.entryDate()).isEqualTo(LocalDate.of(2026, 6, 8));
+        assertThat(response.expectedReceiptDate()).isEqualTo(expectedReceiptDate);
     }
 
     @Test
@@ -212,6 +241,7 @@ class CashEntryServiceTest {
                 "Venda de produto",
                 new BigDecimal("1500.00"),
                 LocalDate.of(2026, 6, 8),
+                null,
                 categoryId,
                 PaymentMethod.PIX,
                 "Recebimento registrado no caixa",
@@ -235,6 +265,7 @@ class CashEntryServiceTest {
                 "Venda de produto",
                 new BigDecimal("1500.00"),
                 LocalDate.of(2026, 6, 8),
+                null,
                 categoryId,
                 PaymentMethod.PIX,
                 "Recebimento registrado no caixa",

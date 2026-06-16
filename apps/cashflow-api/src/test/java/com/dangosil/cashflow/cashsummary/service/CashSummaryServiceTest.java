@@ -31,7 +31,7 @@ class CashSummaryServiceTest {
     void shouldCalculateDailyEstimatedProfit() {
         LocalDate date = LocalDate.of(2026, 6, 8);
 
-        when(cashEntryRepository.sumActiveAmountByEntryDate(date)).thenReturn(new BigDecimal("1500.00"));
+        when(cashEntryRepository.sumActiveAmountByExpectedReceiptDate(date)).thenReturn(new BigDecimal("1500.00"));
         when(cashExpenseRepository.sumActiveAmountByExpenseDate(date)).thenReturn(new BigDecimal("1200.00"));
 
         DailyCashSummaryResponse response = cashSummaryService.getDailySummary(date);
@@ -46,7 +46,7 @@ class CashSummaryServiceTest {
     void shouldReturnZeroWhenThereAreNoEntriesOrExpenses() {
         LocalDate date = LocalDate.of(2026, 6, 8);
 
-        when(cashEntryRepository.sumActiveAmountByEntryDate(date)).thenReturn(null);
+        when(cashEntryRepository.sumActiveAmountByExpectedReceiptDate(date)).thenReturn(null);
         when(cashExpenseRepository.sumActiveAmountByExpenseDate(date)).thenReturn(null);
 
         DailyCashSummaryResponse response = cashSummaryService.getDailySummary(date);
@@ -62,7 +62,7 @@ class CashSummaryServiceTest {
         LocalDate startDate = LocalDate.of(2026, 6, 1);
         LocalDate endDate = LocalDate.of(2026, 6, 30);
 
-        when(cashEntryRepository.sumActiveAmountByEntryDateBetween(startDate, endDate)).thenReturn(new BigDecimal("1500.00"));
+        when(cashEntryRepository.sumActiveAmountByExpectedReceiptDateBetween(startDate, endDate)).thenReturn(new BigDecimal("1500.00"));
         when(cashExpenseRepository.sumActiveAmountByExpenseDateBetween(startDate, endDate)).thenReturn(new BigDecimal("1200.00"));
 
         MonthlyCashSummaryResponse response = cashSummaryService.getMonthlySummary(2026, 6);
@@ -79,7 +79,7 @@ class CashSummaryServiceTest {
         LocalDate startDate = LocalDate.of(2026, 6, 1);
         LocalDate endDate = LocalDate.of(2026, 6, 30);
 
-        when(cashEntryRepository.sumActiveAmountByEntryDateBetween(startDate, endDate)).thenReturn(null);
+        when(cashEntryRepository.sumActiveAmountByExpectedReceiptDateBetween(startDate, endDate)).thenReturn(null);
         when(cashExpenseRepository.sumActiveAmountByExpenseDateBetween(startDate, endDate)).thenReturn(null);
 
         MonthlyCashSummaryResponse response = cashSummaryService.getMonthlySummary(2026, 6);

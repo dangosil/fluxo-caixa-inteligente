@@ -45,18 +45,20 @@ class DashboardSummaryIntegrationTest {
     }
 
     @Test
-    void shouldUseReceivedAmountInDashboardSummary() {
+    void shouldUseExpectedReceiptDateAndReceivedAmountInDashboardSummary() {
         LocalDate date = LocalDate.of(2026, 6, 8);
+        LocalDate saleDate = date.minusDays(1);
         Category incomeCategory = categoryRepository.save(new Category("Sales", CategoryType.INCOME));
         Category expenseCategory = categoryRepository.save(new Category("Supplies", CategoryType.EXPENSE));
 
         cashEntryRepository.save(new CashEntry(
                 "Card sale",
                 new BigDecimal("100.00"),
-                date,
+                saleDate,
                 incomeCategory,
                 PaymentMethod.CREDIT_CARD,
                 null,
+                date,
                 new BigDecimal("10.00"),
                 FeePayer.MERCHANT,
                 null,

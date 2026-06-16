@@ -53,6 +53,9 @@ public class CashEntry {
     @Column(name = "entry_date", nullable = false)
     private LocalDate entryDate;
 
+    @Column(name = "expected_receipt_date", nullable = false)
+    private LocalDate expectedReceiptDate;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
@@ -91,6 +94,7 @@ public class CashEntry {
                 category,
                 paymentMethod,
                 notes,
+                entryDate,
                 BigDecimal.ZERO,
                 FeePayer.MERCHANT,
                 null,
@@ -106,6 +110,7 @@ public class CashEntry {
             Category category,
             PaymentMethod paymentMethod,
             String notes,
+            LocalDate expectedReceiptDate,
             BigDecimal feeAmount,
             FeePayer feePayer,
             CardBrand cardBrand,
@@ -116,6 +121,7 @@ public class CashEntry {
         this.description = description;
         this.amount = amount;
         this.entryDate = entryDate;
+        this.expectedReceiptDate = expectedReceiptDate;
         this.category = category;
         this.paymentMethod = paymentMethod;
         this.notes = notes;
@@ -125,6 +131,35 @@ public class CashEntry {
         this.installmentCount = installmentCount;
         this.installmentAmount = installmentAmount;
         this.active = true;
+    }
+
+    public CashEntry(
+            String description,
+            BigDecimal amount,
+            LocalDate entryDate,
+            Category category,
+            PaymentMethod paymentMethod,
+            String notes,
+            BigDecimal feeAmount,
+            FeePayer feePayer,
+            CardBrand cardBrand,
+            int installmentCount,
+            BigDecimal installmentAmount
+    ) {
+        this(
+                description,
+                amount,
+                entryDate,
+                category,
+                paymentMethod,
+                notes,
+                entryDate,
+                feeAmount,
+                feePayer,
+                cardBrand,
+                installmentCount,
+                installmentAmount
+        );
     }
 
     @PrePersist
@@ -189,6 +224,10 @@ public class CashEntry {
         return entryDate;
     }
 
+    public LocalDate getExpectedReceiptDate() {
+        return expectedReceiptDate;
+    }
+
     public Category getCategory() {
         return category;
     }
@@ -220,6 +259,7 @@ public class CashEntry {
             Category category,
             PaymentMethod paymentMethod,
             String notes,
+            LocalDate expectedReceiptDate,
             BigDecimal feeAmount,
             FeePayer feePayer,
             CardBrand cardBrand,
@@ -229,6 +269,7 @@ public class CashEntry {
         this.description = description;
         this.amount = amount;
         this.entryDate = entryDate;
+        this.expectedReceiptDate = expectedReceiptDate;
         this.category = category;
         this.paymentMethod = paymentMethod;
         this.notes = notes;
@@ -237,6 +278,35 @@ public class CashEntry {
         this.cardBrand = cardBrand;
         this.installmentCount = installmentCount;
         this.installmentAmount = installmentAmount;
+    }
+
+    public void update(
+            String description,
+            BigDecimal amount,
+            LocalDate entryDate,
+            Category category,
+            PaymentMethod paymentMethod,
+            String notes,
+            BigDecimal feeAmount,
+            FeePayer feePayer,
+            CardBrand cardBrand,
+            int installmentCount,
+            BigDecimal installmentAmount
+    ) {
+        update(
+                description,
+                amount,
+                entryDate,
+                category,
+                paymentMethod,
+                notes,
+                entryDate,
+                feeAmount,
+                feePayer,
+                cardBrand,
+                installmentCount,
+                installmentAmount
+        );
     }
 
     public void deactivate() {

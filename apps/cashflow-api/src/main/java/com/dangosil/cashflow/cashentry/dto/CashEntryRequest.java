@@ -24,6 +24,8 @@ public record CashEntryRequest(
         @NotNull
         LocalDate entryDate,
 
+        LocalDate expectedReceiptDate,
+
         @NotNull
         UUID categoryId,
 

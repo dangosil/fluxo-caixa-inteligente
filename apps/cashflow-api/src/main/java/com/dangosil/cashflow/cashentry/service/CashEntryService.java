@@ -62,6 +62,7 @@ public class CashEntryService {
                 category,
                 request.paymentMethod(),
                 request.notes(),
+                resolveExpectedReceiptDate(request),
                 feeFields.feeAmount(),
                 feeFields.feePayer(),
                 request.cardBrand(),
@@ -83,6 +84,7 @@ public class CashEntryService {
                 category,
                 request.paymentMethod(),
                 request.notes(),
+                resolveExpectedReceiptDate(request),
                 feeFields.feeAmount(),
                 feeFields.feePayer(),
                 request.cardBrand(),
@@ -150,6 +152,10 @@ public class CashEntryService {
         return new FeeFields(feeAmount, feePayer, installmentCount);
     }
 
+    private LocalDate resolveExpectedReceiptDate(CashEntryRequest request) {
+        return request.expectedReceiptDate() == null ? request.entryDate() : request.expectedReceiptDate();
+    }
+
     private CashEntryResponse toResponse(CashEntry cashEntry) {
         Category category = cashEntry.getCategory();
         return new CashEntryResponse(
@@ -157,6 +163,7 @@ public class CashEntryService {
                 cashEntry.getDescription(),
                 cashEntry.getAmount(),
                 cashEntry.getEntryDate(),
+                cashEntry.getExpectedReceiptDate(),
                 category.getId(),
                 category.getName(),
                 cashEntry.getPaymentMethod(),

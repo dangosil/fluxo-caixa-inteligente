@@ -40,7 +40,7 @@ class CashEntryRepositoryIntegrationTest {
     }
 
     @Test
-    void shouldSumOnlyActiveEntriesByDate() {
+    void shouldSumOnlyActiveEntriesByExpectedReceiptDate() {
         Category incomeCategory = categoryRepository.save(new Category("Sales", CategoryType.INCOME));
         LocalDate targetDate = LocalDate.of(2026, 6, 8);
 
@@ -51,6 +51,7 @@ class CashEntryRepositoryIntegrationTest {
                 incomeCategory,
                 PaymentMethod.PIX,
                 null,
+                targetDate,
                 new BigDecimal("10.00"),
                 FeePayer.MERCHANT,
                 null,
@@ -64,6 +65,7 @@ class CashEntryRepositoryIntegrationTest {
                 incomeCategory,
                 PaymentMethod.CASH,
                 null,
+                targetDate,
                 new BigDecimal("5.00"),
                 FeePayer.CUSTOMER,
                 null,
@@ -83,19 +85,25 @@ class CashEntryRepositoryIntegrationTest {
         cashEntryRepository.save(new CashEntry(
                 "Another day sale",
                 new BigDecimal("500.00"),
-                targetDate.plusDays(1),
+                targetDate,
                 incomeCategory,
                 PaymentMethod.PIX,
+                null,
+                targetDate.plusDays(1),
+                BigDecimal.ZERO,
+                FeePayer.MERCHANT,
+                null,
+                1,
                 null
         ));
 
-        BigDecimal total = cashEntryRepository.sumActiveAmountByEntryDate(targetDate);
+        BigDecimal total = cashEntryRepository.sumActiveAmountByExpectedReceiptDate(targetDate);
 
         assertThat(total).isEqualByComparingTo("340.50");
     }
 
     @Test
-    void shouldSumOnlyActiveEntriesByPeriod() {
+    void shouldSumOnlyActiveEntriesByExpectedReceiptDatePeriod() {
         Category incomeCategory = categoryRepository.save(new Category("Services", CategoryType.INCOME));
         LocalDate startDate = LocalDate.of(2026, 6, 1);
         LocalDate endDate = LocalDate.of(2026, 6, 30);
@@ -107,6 +115,7 @@ class CashEntryRepositoryIntegrationTest {
                 incomeCategory,
                 PaymentMethod.PIX,
                 null,
+                startDate,
                 new BigDecimal("10.00"),
                 FeePayer.MERCHANT,
                 null,
@@ -120,6 +129,7 @@ class CashEntryRepositoryIntegrationTest {
                 incomeCategory,
                 PaymentMethod.BANK_TRANSFER,
                 null,
+                endDate,
                 new BigDecimal("15.00"),
                 FeePayer.CUSTOMER,
                 null,
@@ -139,13 +149,19 @@ class CashEntryRepositoryIntegrationTest {
         cashEntryRepository.save(new CashEntry(
                 "Next month service",
                 new BigDecimal("900.00"),
-                LocalDate.of(2026, 7, 1),
+                LocalDate.of(2026, 6, 15),
                 incomeCategory,
                 PaymentMethod.PIX,
+                null,
+                LocalDate.of(2026, 7, 1),
+                BigDecimal.ZERO,
+                FeePayer.MERCHANT,
+                null,
+                1,
                 null
         ));
 
-        BigDecimal total = cashEntryRepository.sumActiveAmountByEntryDateBetween(startDate, endDate);
+        BigDecimal total = cashEntryRepository.sumActiveAmountByExpectedReceiptDateBetween(startDate, endDate);
 
         assertThat(total).isEqualByComparingTo("390.00");
     }

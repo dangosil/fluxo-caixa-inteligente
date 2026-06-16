@@ -26,7 +26,7 @@ public class CashSummaryService {
 
     @Transactional(readOnly = true)
     public DailyCashSummaryResponse getDailySummary(LocalDate date) {
-        BigDecimal totalIncome = zeroIfNull(cashEntryRepository.sumActiveAmountByEntryDate(date));
+        BigDecimal totalIncome = zeroIfNull(cashEntryRepository.sumActiveAmountByExpectedReceiptDate(date));
         BigDecimal totalExpense = zeroIfNull(cashExpenseRepository.sumActiveAmountByExpenseDate(date));
         BigDecimal estimatedProfit = totalIncome.subtract(totalExpense);
 
@@ -39,7 +39,7 @@ public class CashSummaryService {
         LocalDate startDate = yearMonth.atDay(1);
         LocalDate endDate = yearMonth.atEndOfMonth();
 
-        BigDecimal totalIncome = zeroIfNull(cashEntryRepository.sumActiveAmountByEntryDateBetween(startDate, endDate));
+        BigDecimal totalIncome = zeroIfNull(cashEntryRepository.sumActiveAmountByExpectedReceiptDateBetween(startDate, endDate));
         BigDecimal totalExpense = zeroIfNull(cashExpenseRepository.sumActiveAmountByExpenseDateBetween(startDate, endDate));
         BigDecimal estimatedProfit = totalIncome.subtract(totalExpense);
 

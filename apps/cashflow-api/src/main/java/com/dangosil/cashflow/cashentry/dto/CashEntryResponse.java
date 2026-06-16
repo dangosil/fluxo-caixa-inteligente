@@ -13,6 +13,7 @@ public record CashEntryResponse(
         String description,
         BigDecimal amount,
         LocalDate entryDate,
+        LocalDate expectedReceiptDate,
         UUID categoryId,
         String categoryName,
         PaymentMethod paymentMethod,

@@ -50,6 +50,7 @@ class CashEntryControllerTest {
                 "Venda de produto",
                 new BigDecimal("1500.00"),
                 entryDate,
+                entryDate.plusDays(2),
                 categoryId,
                 PaymentMethod.PIX,
                 "Recebimento registrado no caixa",
@@ -64,6 +65,7 @@ class CashEntryControllerTest {
                 "Venda de produto",
                 new BigDecimal("1500.00"),
                 entryDate,
+                entryDate.plusDays(2),
                 categoryId,
                 "Venda de produto",
                 PaymentMethod.PIX,
@@ -90,6 +92,7 @@ class CashEntryControllerTest {
                 .andExpect(jsonPath("$.id").value(id.toString()))
                 .andExpect(jsonPath("$.description").value("Venda de produto"))
                 .andExpect(jsonPath("$.amount").value(1500.00))
+                .andExpect(jsonPath("$.expectedReceiptDate").value("2026-06-10"))
                 .andExpect(jsonPath("$.categoryId").value(categoryId.toString()))
                 .andExpect(jsonPath("$.paymentMethod").value("PIX"))
                 .andExpect(jsonPath("$.feeAmount").value(30.00))
@@ -112,6 +115,7 @@ class CashEntryControllerTest {
                 id,
                 "Venda de produto",
                 new BigDecimal("1500.00"),
+                entryDate,
                 entryDate,
                 categoryId,
                 "Venda de produto",
@@ -155,6 +159,7 @@ class CashEntryControllerTest {
                 "Venda de produto",
                 new BigDecimal("1500.00"),
                 entryDate,
+                entryDate,
                 categoryId,
                 "Venda de produto",
                 PaymentMethod.PIX,
@@ -184,6 +189,7 @@ class CashEntryControllerTest {
         CashEntryRequest request = new CashEntryRequest(
                 "",
                 BigDecimal.ZERO,
+                null,
                 null,
                 null,
                 null,

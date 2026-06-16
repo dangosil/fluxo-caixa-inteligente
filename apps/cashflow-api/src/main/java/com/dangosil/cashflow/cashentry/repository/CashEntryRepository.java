@@ -40,9 +40,11 @@ public interface CashEntryRepository extends JpaRepository<CashEntry, UUID> {
             ), 0)
             FROM CashEntry cashEntry
             WHERE cashEntry.active = true
-              AND cashEntry.entryDate = :entryDate
+              AND cashEntry.expectedReceiptDate = :expectedReceiptDate
             """)
-    BigDecimal sumActiveAmountByEntryDate(@Param("entryDate") LocalDate entryDate);
+    BigDecimal sumActiveAmountByExpectedReceiptDate(
+            @Param("expectedReceiptDate") LocalDate expectedReceiptDate
+    );
 
     @Query("""
             SELECT COALESCE(SUM(
@@ -54,10 +56,10 @@ public interface CashEntryRepository extends JpaRepository<CashEntry, UUID> {
             ), 0)
             FROM CashEntry cashEntry
             WHERE cashEntry.active = true
-              AND cashEntry.entryDate >= :startDate
-              AND cashEntry.entryDate <= :endDate
+              AND cashEntry.expectedReceiptDate >= :startDate
+              AND cashEntry.expectedReceiptDate <= :endDate
             """)
-    BigDecimal sumActiveAmountByEntryDateBetween(
+    BigDecimal sumActiveAmountByExpectedReceiptDateBetween(
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate
     );
