@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -25,6 +25,7 @@ const cashEntrySchema = z
     description: z.string().trim().min(2, 'Informe uma descrição.'),
     amount: z.coerce.number().positive('Informe um valor maior que zero.'),
     entryDate: z.string().min(1, 'Informe a data.'),
+    expectedReceiptDate: z.string().optional(),
     categoryId: z.string().min(1, 'Selecione uma categoria.'),
     paymentMethod: z.enum(['PIX', 'CASH', 'CREDIT_CARD', 'DEBIT_CARD', 'BANK_TRANSFER', 'OTHER'], {
       message: 'Selecione a forma de pagamento.',
@@ -59,19 +60,22 @@ type CashEntryFormProps = {
 }
 
 export function CashEntryForm({ categories, isSaving, onSubmit }: CashEntryFormProps) {
+  const today = new Date().toISOString().slice(0, 10)
   const {
     register,
     handleSubmit,
     reset,
     setValue,
     watch,
+    getValues,
     formState: { errors },
   } = useForm<CashEntryFormInput, unknown, CashEntryFormValues>({
     resolver: zodResolver(cashEntrySchema),
     defaultValues: {
       description: '',
       amount: 0,
-      entryDate: new Date().toISOString().slice(0, 10),
+      entryDate: today,
+      expectedReceiptDate: today,
       categoryId: '',
       paymentMethod: 'PIX',
       notes: '',
@@ -83,6 +87,8 @@ export function CashEntryForm({ categories, isSaving, onSubmit }: CashEntryFormP
   })
 
   const paymentMethod = watch('paymentMethod')
+  const entryDate = watch('entryDate')
+  const previousEntryDateRef = useRef(entryDate)
   const isCardPayment = paymentMethod === 'CREDIT_CARD' || paymentMethod === 'DEBIT_CARD'
   const amount = Number(watch('amount') || 0)
   const feeAmount = Number(watch('feeAmount') || 0)
@@ -91,6 +97,21 @@ export function CashEntryForm({ categories, isSaving, onSubmit }: CashEntryFormP
   const customerPaidAmount = feePayer === 'CUSTOMER' ? amount + feeAmount : amount
   const receivedAmount = feePayer === 'MERCHANT' ? Math.max(amount - feeAmount, 0) : amount
   const installmentAmountPreview = installmentCount > 0 ? customerPaidAmount / installmentCount : customerPaidAmount
+
+  useEffect(() => {
+    if (!entryDate) {
+      return
+    }
+
+    const previousEntryDate = previousEntryDateRef.current
+    const currentExpectedReceiptDate = getValues('expectedReceiptDate')
+
+    if (!currentExpectedReceiptDate || currentExpectedReceiptDate === previousEntryDate) {
+      setValue('expectedReceiptDate', entryDate)
+    }
+
+    previousEntryDateRef.current = entryDate
+  }, [entryDate, getValues, setValue])
 
   useEffect(() => {
     if (!isCardPayment) {
@@ -127,6 +148,7 @@ export function CashEntryForm({ categories, isSaving, onSubmit }: CashEntryFormP
       description: values.description.trim(),
       amount: values.amount,
       entryDate: values.entryDate,
+      expectedReceiptDate: values.expectedReceiptDate || values.entryDate,
       categoryId: values.categoryId,
       paymentMethod: values.paymentMethod,
       notes: values.notes?.trim() || undefined,
@@ -135,7 +157,8 @@ export function CashEntryForm({ categories, isSaving, onSubmit }: CashEntryFormP
     reset({
       description: '',
       amount: 0,
-      entryDate: new Date().toISOString().slice(0, 10),
+      entryDate: today,
+      expectedReceiptDate: today,
       categoryId: '',
       paymentMethod: 'PIX',
       notes: '',
@@ -182,13 +205,26 @@ export function CashEntryForm({ categories, isSaving, onSubmit }: CashEntryFormP
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium text-[#334238]">Data</span>
+            <span className="text-sm font-medium text-[#334238]">Data da venda</span>
             <input
               type="date"
               className="mt-2 h-11 w-full rounded-md border border-[#cfd8cc] bg-white px-3 text-sm outline-none transition focus:border-[#345c3d] focus:ring-2 focus:ring-[#345c3d]/20"
               {...register('entryDate')}
             />
             {errors.entryDate && <span className="mt-1 block text-sm text-[#8a3d2f]">{errors.entryDate.message}</span>}
+          </label>
+
+          <label className="block">
+            <span id="expected-receipt-date-label" className="text-sm font-medium text-[#334238]">
+              Recebimento previsto
+            </span>
+            <input
+              type="date"
+              aria-labelledby="expected-receipt-date-label"
+              className="mt-2 h-11 w-full rounded-md border border-[#cfd8cc] bg-white px-3 text-sm outline-none transition focus:border-[#345c3d] focus:ring-2 focus:ring-[#345c3d]/20"
+              {...register('expectedReceiptDate')}
+            />
+            <span className="mt-1 block text-xs text-[#5f6f65]">Usado nos resumos e no dashboard.</span>
           </label>
         </div>
 
