@@ -16,6 +16,7 @@ export type CashEntry = {
   customerPaidAmount: number
   receivedAmount: number
   entryDate: string
+  expectedReceiptDate: string
   categoryId: string
   categoryName: string
   paymentMethod: PaymentMethod
@@ -37,6 +38,7 @@ export type CreateCashEntryRequest = {
   description: string
   amount: number
   entryDate: string
+  expectedReceiptDate?: string
   categoryId: string
   paymentMethod: PaymentMethod
   notes?: string
