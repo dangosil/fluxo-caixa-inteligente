@@ -13,6 +13,7 @@ O MVP atual trabalha em **base unica/local**, sem cadastro de empresa, sem `comp
 - Resumo diario.
 - Resumo mensal.
 - Dashboard simples de resumo financeiro.
+- Taxa manual de maquininha para entradas no cartão, com data prevista de recebimento.
 - Interface web para operar o MVP.
 
 Fora do MVP atual:
@@ -220,6 +221,8 @@ estimatedProfit = totalIncome - totalExpense
 ```
 
 O valor representa lucro estimado do fluxo de caixa registrado. Nao e lucro contabil formal.
+
+Entradas usam `entryDate` como data da venda ou lançamento e `expectedReceiptDate` como data prevista de recebimento. Resumos e dashboard consideram entradas pela data `expectedReceiptDate`, e `totalIncome` considera o valor recebido pela empresa após taxa de maquininha quando aplicável.
 
 ## Seguranca de Dados
 

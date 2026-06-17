@@ -1,21 +1,29 @@
 # Requisitos - Taxas de Maquininha em Entradas
 
-## 1. Problema de Negocio
+## 1. Problema de Negócio
 
-Vendas no cartao nem sempre geram para a empresa o mesmo valor informado na venda. Dependendo da forma de pagamento, da bandeira, das parcelas e da politica comercial, a taxa da maquininha pode ser absorvida pela empresa ou repassada ao cliente.
+Vendas no cartão nem sempre geram para a empresa o mesmo valor informado na venda. Dependendo da forma de pagamento, da bandeira, das parcelas e da política comercial, a taxa da maquininha pode ser absorvida pela empresa ou repassada ao cliente.
 
-Para que o fluxo de caixa fique mais proximo do valor realmente recebido, as entradas pagas no cartao precisam registrar:
+Para que o fluxo de caixa fique mais próximo do valor realmente recebido, as entradas pagas no cartão precisam registrar:
 
 - valor base da venda;
 - valor pago pelo cliente;
 - taxa da maquininha;
 - valor recebido pela empresa;
-- prazo previsto de recebimento;
-- dados basicos da operacao no cartao.
+- data prevista de recebimento;
+- dados básicos da operação no cartão.
 
-## 2. Exemplo Realista de Venda no Cartao
+## 2. Datas da Entrada
 
-Uma venda tem valor base de R$ 100,00. A taxa informada da maquininha e R$ 3,00.
+`entryDate` representa a data da venda ou lançamento.
+
+`expectedReceiptDate` representa a data prevista em que o dinheiro entra no caixa. Resumos financeiros e dashboard usam `expectedReceiptDate` para entradas.
+
+Quando `expectedReceiptDate` não for informado, o backend usa `entryDate` como data prevista de recebimento.
+
+## 3. Exemplo de Venda no Cartão
+
+Uma venda tem valor base de R$ 100,00. A taxa manual da maquininha é R$ 3,00.
 
 Se a empresa absorver a taxa:
 
@@ -31,88 +39,95 @@ Se a taxa for repassada ao cliente:
 - valor pago pelo cliente: R$ 103,00;
 - valor recebido pela empresa: R$ 100,00.
 
-## 3. Conceitos
+## 4. Conceitos
+
+### Data da Venda
+
+Data em que a venda aconteceu ou em que a entrada foi lançada. No backend, é representada por `entryDate`.
+
+### Data Prevista de Recebimento
+
+Data estimada em que o dinheiro entra no caixa. No backend, é representada por `expectedReceiptDate`.
 
 ### Valor Base da Venda
 
-Valor original da venda antes de considerar a taxa da maquininha.
+Valor original da venda antes de considerar a taxa da maquininha. No backend, é representado por `amount`.
 
 ### Taxa da Maquininha
 
-Valor cobrado pela operadora ou informado manualmente para representar o custo da transacao no cartao.
+Valor informado manualmente para representar o custo da transação no cartão. No backend, é representado por `feeAmount`.
 
 ### Taxa Absorvida pela Empresa
 
-Situacao em que o cliente paga o valor base da venda e a empresa recebe o valor base descontado da taxa.
+Situação em que o cliente paga o valor base da venda e a empresa recebe o valor base descontado da taxa. No backend, é representada por `feePayer = MERCHANT`.
 
 ### Taxa Repassada ao Cliente
 
-Situacao em que o cliente paga o valor base da venda acrescido da taxa e a empresa recebe o valor base da venda.
+Situação em que o cliente paga o valor base da venda acrescido da taxa e a empresa recebe o valor base da venda. No backend, é representada por `feePayer = CUSTOMER`.
 
 ### Valor Pago pelo Cliente
 
-Valor final cobrado do cliente na operacao de cartao.
+Valor final cobrado do cliente na operação de cartão.
 
 ### Valor Recebido pela Empresa
 
-Valor que entra no fluxo de caixa da empresa apos considerar a taxa.
+Valor que entra no fluxo de caixa da empresa após considerar a taxa.
 
 ### Parcelas
 
-Quantidade de parcelas da venda no cartao. Na primeira versao, esse dado e apenas informativo para a entrada registrada.
+Quantidade de parcelas da venda no cartão. `installmentCount` representa a quantidade de parcelas.
+
+`installmentAmount` é informativo ou aproximado e não altera o valor final da venda.
 
 ### Bandeira
 
-Bandeira do cartao usada na venda, como Visa, Mastercard, Elo ou outra.
+Bandeira do cartão usada na venda, como Visa, Mastercard, Elo ou outra.
 
-### Prazo de Recebimento
+## 5. Regras da Primeira Versão
 
-Data ou quantidade de dias prevista para a empresa receber o valor da operacao.
+- A taxa é informada manualmente.
+- Taxa de maquininha se aplica somente a cartão de crédito e cartão de débito.
+- PIX, dinheiro, transferência e outros métodos não exibem taxa de maquininha no frontend.
+- Parcela é informativa e não altera o valor final da venda.
+- Resumos e dashboard usam `expectedReceiptDate` para entradas.
 
-## 4. Regras da Primeira Versao
+## 6. Regras de Cálculo
 
-- A taxa sera informada manualmente.
-- Nao havera calculo automatico por operadora.
-- Nao havera cadastro de maquininha.
-- Nao havera conciliacao bancaria.
-- Nao havera geracao automatica de recebiveis.
-- Nao havera agenda de parcelas.
-
-## 5. Regras de Calculo
-
-Quando a taxa for absorvida pela empresa:
+Quando `feePayer = MERCHANT`:
 
 ```txt
 customerPaidAmount = amount
 receivedAmount = amount - feeAmount
 ```
 
-Quando a taxa for repassada ao cliente:
+Quando `feePayer = CUSTOMER`:
 
 ```txt
 customerPaidAmount = amount + feeAmount
 receivedAmount = amount
 ```
 
-## 6. Validacoes
+## 7. Validações
 
-- `feeAmount` nao pode ser negativo.
-- `feeAmount` nao pode ser maior que `amount` quando a taxa for absorvida pela empresa.
+- `feeAmount` não pode ser negativo.
+- `feeAmount` não pode ser maior que `amount` quando a taxa for absorvida pela empresa.
 - `installmentCount` deve ser maior ou igual a 1.
-- `installmentAmount` deve ser opcional ou calculado no frontend/backend.
-- `receivedAmount` nao pode ser negativo.
+- `installmentAmount` deve ser opcional e informativo.
+- `receivedAmount` não pode ser negativo.
 
-## 7. Impacto nos Resumos
+## 8. Impacto nos Resumos
 
 - `totalIncome` deve considerar `receivedAmount`.
+- Resumos e dashboard devem considerar entradas pela data `expectedReceiptDate`.
 - `estimatedProfit` continua sendo calculado como `totalIncome - totalExpense`.
 
-Assim, o lucro estimado continua representando o resultado estimado do fluxo de caixa registrado, nao lucro contabil formal.
+Assim, o lucro estimado continua representando o resultado estimado do fluxo de caixa registrado, não lucro contábil formal.
 
-## 8. Fora do Escopo
+## 9. Fora do Escopo
 
-- Calculo automatico de taxa por bandeira.
-- Multiplas maquininhas.
-- Conciliacao bancaria.
-- Agenda de recebiveis.
-- Geracao automatica de parcelas futuras.
+- Cálculo automático de taxa por bandeira ou operadora.
+- Cálculo automático de dias úteis.
+- Geração automática de parcelas futuras.
+- Agenda de recebíveis.
+- Conciliação bancária.
+- Cadastro de maquininha.

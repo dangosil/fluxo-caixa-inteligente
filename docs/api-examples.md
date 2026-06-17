@@ -65,13 +65,39 @@ curl -X POST "http://localhost:8080/cash-entries" \
     "description": "Venda no balcão",
     "amount": 1500.00,
     "entryDate": "2026-06-08",
+    "expectedReceiptDate": "2026-06-08",
     "categoryId": "COLE_O_UUID_AQUI",
     "paymentMethod": "PIX",
     "notes": "Exemplo fictício"
   }'
 ```
 
-## 6. Criar Saída
+## 6. Criar Entrada com Cartão
+
+`entryDate` é a data da venda ou lançamento. `expectedReceiptDate` é a data prevista em que o dinheiro entra no caixa. Resumos e dashboard usam `expectedReceiptDate` para entradas.
+
+```bash
+curl -X POST "http://localhost:8080/cash-entries" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "description": "Venda no cartão",
+    "amount": 100.00,
+    "entryDate": "2026-06-08",
+    "expectedReceiptDate": "2026-06-10",
+    "categoryId": "COLE_O_UUID_AQUI",
+    "paymentMethod": "CREDIT_CARD",
+    "feeAmount": 3.00,
+    "feePayer": "MERCHANT",
+    "cardBrand": "VISA",
+    "installmentCount": 2,
+    "installmentAmount": 50.00,
+    "notes": "Exemplo fictício"
+  }'
+```
+
+Nesse exemplo, o cliente paga `amount` e a empresa recebe `amount - feeAmount`. Quando `feePayer` for `CUSTOMER`, o cliente paga `amount + feeAmount` e a empresa recebe `amount`.
+
+## 7. Criar Saída
 
 Use uma categoria do tipo `EXPENSE`.
 
@@ -88,19 +114,19 @@ curl -X POST "http://localhost:8080/cash-expenses" \
   }'
 ```
 
-## 7. Consultar Resumo Diário
+## 8. Consultar Resumo Diário
 
 ```bash
 curl -X GET "http://localhost:8080/cash-summary/daily?date=2026-06-08"
 ```
 
-## 8. Consultar Resumo Mensal
+## 9. Consultar Resumo Mensal
 
 ```bash
 curl -X GET "http://localhost:8080/cash-summary/monthly?year=2026&month=6"
 ```
 
-## 9. Consultar Dashboard
+## 10. Consultar Dashboard
 
 Com data informada:
 
