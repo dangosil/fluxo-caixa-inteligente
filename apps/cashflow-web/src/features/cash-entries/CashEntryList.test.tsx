@@ -40,4 +40,12 @@ describe('CashEntryList', () => {
 
     expect(screen.getByText('Recebimento em outra data')).toBeInTheDocument()
   })
+
+  it('shows a simple receipt date when sale and expected receipt dates are the same', () => {
+    render(<CashEntryList entries={[{ ...entry, expectedReceiptDate: entry.entryDate }]} />)
+
+    expect(screen.getByText('Venda em 08/06/2026')).toBeInTheDocument()
+    expect(screen.getByText('Recebe em 08/06/2026')).toBeInTheDocument()
+    expect(screen.queryByText('Recebimento em outra data')).not.toBeInTheDocument()
+  })
 })
