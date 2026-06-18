@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useRef } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
 import type { Category } from '../categories/types'
@@ -66,7 +66,7 @@ export function CashEntryForm({ categories, isSaving, onSubmit }: CashEntryFormP
     handleSubmit,
     reset,
     setValue,
-    watch,
+    control,
     getValues,
     formState: { errors },
   } = useForm<CashEntryFormInput, unknown, CashEntryFormValues>({
@@ -86,14 +86,17 @@ export function CashEntryForm({ categories, isSaving, onSubmit }: CashEntryFormP
     },
   })
 
-  const paymentMethod = watch('paymentMethod')
-  const entryDate = watch('entryDate')
+  const paymentMethod = useWatch({ control, name: 'paymentMethod' })
+  const entryDate = useWatch({ control, name: 'entryDate' })
+  const watchedAmount = useWatch({ control, name: 'amount' })
+  const watchedFeeAmount = useWatch({ control, name: 'feeAmount' })
+  const feePayer = useWatch({ control, name: 'feePayer' }) || 'MERCHANT'
+  const watchedInstallmentCount = useWatch({ control, name: 'installmentCount' })
   const previousEntryDateRef = useRef(entryDate)
   const isCardPayment = paymentMethod === 'CREDIT_CARD' || paymentMethod === 'DEBIT_CARD'
-  const amount = Number(watch('amount') || 0)
-  const feeAmount = Number(watch('feeAmount') || 0)
-  const feePayer = watch('feePayer') || 'MERCHANT'
-  const installmentCount = Number(watch('installmentCount') || 1)
+  const amount = Number(watchedAmount || 0)
+  const feeAmount = Number(watchedFeeAmount || 0)
+  const installmentCount = Number(watchedInstallmentCount || 1)
   const customerPaidAmount = feePayer === 'CUSTOMER' ? amount + feeAmount : amount
   const receivedAmount = feePayer === 'MERCHANT' ? Math.max(amount - feeAmount, 0) : amount
   const installmentAmountPreview = installmentCount > 0 ? customerPaidAmount / installmentCount : customerPaidAmount
